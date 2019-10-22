@@ -30,6 +30,12 @@ DayBookApp运行需要API服务器资源支持，服务端代码请查看[DayBoo
 浏览器打开`http://localhost:8100`即可打开浏览器看到效果。
 `http://localhost:8100/ionic-lab`可以看到android、IOS、WP的效果 
 
+## Browser
+
+ionic cordova platform add browser
+ionic cordova run browser 
+ionic cordova plugin add cordova-plugin-dialogs
+
 ## 构建Android App
 ```
 ionic platform add android

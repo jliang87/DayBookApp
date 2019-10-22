@@ -17,6 +17,7 @@ import { HttpService } from "../providers/http-service";
   selector: 'app',
   templateUrl: 'app.html'
 })
+
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
   // make AddBill the root (or first) page
@@ -34,8 +35,8 @@ export class MyApp {
     public events :Events,
     public modalCtrl: ModalController,
     public storageService:StorageService,
-    public httpService:HttpService
-  ) {
+    public httpService:HttpService)
+  {
     this.initializeApp();
 
     // set our app's pages
@@ -45,27 +46,29 @@ export class MyApp {
     ];
     this.initEvent();
   }
+
   initEvent(){
     //set curr_user after login
     this.events.subscribe(Constants.CURR_USER,user => this.curr_user = user );
     //set swipe enabled
     // this.events.subscribe(Constants.SWIPE_ENABLE,val => this.menu.swipeEnable(val));
   }
-  
 
   initializeApp() {
     this.platform.ready().then(() => {
-
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
       //注册返回按键事件
       this.registerBackButtonAction();
+
       //登录认证
       this.authentication();
 
       this.initBillType();
     });
   }
+
   registerBackButtonAction(){
      this.platform.registerBackButtonAction((): any => {
         let activeVC = this.nav.getActive();
@@ -81,34 +84,38 @@ export class MyApp {
         return this.nav.pop();
       }, 101);
   }
+
   initBillType(){
     let billtypes = this.storageService.read(Constants.BILL_TYPE);
-    if(billtypes!=null) return;
-    this.httpService.httpGetWithAuth("common/dictionary?typeid=1")
-          .then(result =>{
-            if(result.status==-1){
-              this.httpService.alert(result.msg);
-              return;
-            }
-            let billTypes = result.object;
-            this.storageService.write(Constants.BILL_TYPE,billTypes);
-          })
-          .catch(error =>{
-            console.log(error);
-          });
+    if (billtypes != null) return;
+
+    this.httpService.httpGetNoAuth("common/dictionary?typeid=1").then(result => {
+      if (result.status == -1) {
+        return;
+      }
+      this.storageService.write(Constants.BILL_TYPE, result.object);
+    })
+    .catch(error =>{
+      console.log(error);
+    });
   }
+
   openPage(page) {
     this.menu.close();
     this.nav.setRoot(page.component);
   }
-   authentication(){
-   if(!this.storageService.read(Constants.CURR_USER)){
+
+  authentication(){
+   if (!this.storageService.read(Constants.CURR_USER)) {
       let modal = this.modalCtrl.create(LoginPage);
       modal.present();
    }
- }
+  }
+
   showExit() {
-    if (this.backButtonPressed) this.platform.exitApp();  
+    if (this.backButtonPressed) {
+      this.platform.exitApp();
+    }
     else {
       let toast = this.toastCtrl.create({
         message: '再按一次退出应用',
@@ -122,6 +129,7 @@ export class MyApp {
       }, 2000)
     }
   }
+
   logout(){
     this.menu.close();
     let activeVC = this.nav.getActive();

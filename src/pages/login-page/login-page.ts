@@ -13,23 +13,27 @@ import { Constants } from "../../domain/Constants";
   selector: 'page-login-page',
   templateUrl: 'login-page.html',
 })
+
 export class LoginPage {
   loginForm:FormGroup;
   constructor(public viewCtrl: ViewController,
               public storageService:StorageService,
               public httpService :HttpService,
               private formBuilder: FormBuilder,
-              public events:Events) {
+              public events:Events)
+  {
                 this.initForm();
   }
-   initForm() {
+
+  initForm() {
         let user = this.storageService.read<User>(Constants.CURR_USER);
         this.loginForm = this.formBuilder.group({
             name:[user==null?'':user.alias,Validators.required], 
             password: ['', Validators.required]
         });
-    }
-  login(){
+  }
+
+  login() {
     let loader = this.httpService.loading();
     //发布登录成功消息，刷新首页信息
     this.viewCtrl.onDidDismiss(()=>{
@@ -59,11 +63,12 @@ export class LoginPage {
       }
     );   
   }
+
   forgetPwd(){
     this.httpService.toast('功能完善中');
   }
+
   register(){
     this.httpService.toast('功能完善中');
   }
-
 }

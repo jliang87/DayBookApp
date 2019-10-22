@@ -8,5 +8,4 @@ export const Constants = {
      HEADER_USER: "APP_USER_ID",
      /**可滑动 */
      SWIPE_ENABLE: "SWIPE_ENABLE"
-
 }

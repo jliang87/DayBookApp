@@ -26,21 +26,24 @@ export class AddBillPage {
 		this.initEvent();
 	}
 
-	initEvent(){
+	initEvent() {
     	this.events.subscribe("LOGIN_SUCCESS",()=>this.init() );
-  	}
+  }
 
 	ionViewDidEnter() {
 		if(this.httpService.getCurrUser()){
 			this.init();
 		}
 	}
+
 	ionViewDidLeave() {
 		console.log('ionViewDidLeave');
 	}
+
 	ionViewDidLoad() {
 		
 	}
+
 	init() {
 		let loader = this.httpService.loading();
 		loader.present();
@@ -59,9 +62,11 @@ export class AddBillPage {
 		});
 
 	}
+
 	addBill() {
 		this.navCtrl.push(SaveBillPage);
 	}
+
 	/**跳转到月账单 */
 	amountClick(type:number){
 		let start = DateUtils.getStrDate(DateUtils.getFirstDayOfMonth(new Date()));
@@ -69,6 +74,7 @@ export class AddBillPage {
 		let params = [{key:"credate_between",value:start},{key:"credate_betweenand",value:end}];
 		this.navCtrl.push(ResultsBill,{params:params});
 	}
+
 	doRefresh(event) {
 		this.bookService.findAll()
 		.catch(error => event.complete())

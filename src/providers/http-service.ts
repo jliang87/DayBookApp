@@ -14,7 +14,8 @@ import { StorageService } from "./storage-service";
 
 @Injectable()
 export class HttpService {
-    hostUrl:string = "localhost:9971";
+    //https://stackoverflow.com/questions/10752055/cross-origin-requests-are-only-supported-for-http-error-when-loading-a-local
+    hostUrl:string = "http://localhost:9971";
     TIME_OUT:number = 30000;
     constructor(
         private http: Http,
@@ -28,11 +29,11 @@ export class HttpService {
     /**带身份验证的get请求 */
     public httpGetWithAuth(url: string):Promise<RestEntity> {
         url = `${this.hostUrl}/${url}`;
-        var headers = new Headers();
+        let headers = new Headers();
         let token = this.getToken();
-        if(token==null) {
-            this.alert('异常','Token获取错误');
-            return;
+        if(token == null) {
+            // this.alert('异常','Token获取错误');
+            return Promise.reject("no token")
         }
         headers.append(Constants.AUTHORIZATION, token);
         let options = new RequestOptions({ headers: headers });
@@ -45,16 +46,19 @@ export class HttpService {
     } 
     /**不需身份验证的get请求 */
     public httpGetNoAuth(url: string) {
-
+        url = `${this.hostUrl}/${url}`;
         var headers = new Headers();
         let options = new RequestOptions({ headers: headers });
         return this.http.get(url, options).timeout(this.TIME_OUT).toPromise()
-            .then(res => res.json())
+            .then(res => {
+              return res.json()
+            })
             .catch(err => {
                 console.log('访问错误：'+err);
                 this.handleError(err);
             });
     }
+
      /**不带身份验证的post请求 */
     public httpPostNoAuth(url: string, body: any) :Promise<RestEntity>{
           url = `${this.hostUrl}/${url}`;
@@ -67,6 +71,7 @@ export class HttpService {
                 this.handleError(err);
             });
     }
+
     public httpPostWithAuth(url: string, body: any) :Promise<RestEntity>{
           url = `${this.hostUrl}/${url}`;
         var headers = new Headers();
@@ -99,10 +104,12 @@ export class HttpService {
 			});
         return loader;
     }
+
     public alert(msg:string,title?:string) {
         if(title==null) title='提示';
         this.dialogs.alert(msg,title);
     }
+
     public toast(msg:string,time?:number) {
         if(!time) time = 3000;
         let toast = this.toastCtrl.create({
@@ -111,14 +118,18 @@ export class HttpService {
         });
         toast.present();
     }
+
     /**当前登录用户 */
     public getCurrUser():User{
        return this.storageService.read<User>(Constants.CURR_USER);
     }
+
     public getToken():string{
-        let user = this.getCurrUser(); 
-        if(user==null || user.id==null || user.token==null){this.alert('Token错误，请登录后重试');}
-        let token = user.id+"_"+user.token;
-        return token;
+        let user = this.getCurrUser();
+        if (user != null) {
+          return user.id + "_" + user.token;
+        } else {
+          this.alert('Token错误，请登录后重试');
+        }
     }
 }
